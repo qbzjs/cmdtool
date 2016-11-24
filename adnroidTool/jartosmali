@@ -1,0 +1,134 @@
+#!/bin/bash
+export PATH=/Users/junpengzhang/Documents/android/apktool:$PATH
+#安卓sdk
+export PATH=/Users/junpengzhang/Documents/android/android_sdk/build-tools/25.0.0:$PATH
+export PATH=/usr/bin/:/usr/local/bin:$PATH
+
+JARPKG=$1
+CUR_PATH=`pwd`
+basepath=$(cd `dirname $0`; pwd)
+
+#录屏sdk使用的smali文件所在目录
+sdkSmaliPth=/Users/junpengzhang/Documents/android/sdkpackage_android/lib/smali/com/joyme
+
+#未输入jar文件路径时sdk默认使用的jar文件路径
+defJarPth=/Users/junpengzhang/Documents/android/sdkpackage_android/sdk/libs/LaiwanSDK.jar
+
+#获取文件路径
+getFilePth()
+{
+    var="$1"
+    tmp=${var%/*}
+    echo $tmp
+}
+
+
+#获取路径中的文件名
+getFName()
+{
+    var="$1"
+    tmp=${var##*/}
+    echo ${tmp%.*}
+}
+
+getFileName()
+{
+    var="$1"
+    tmp=${var##*/}
+    echo $tmp
+}
+
+
+if [[ ! $JARPKG ]]; then
+    echo '未输入jar文件路径参数，默认使用sdk下的jar文件来转smali文件'
+    if [[ ! -f $defJarPth ]]; then
+        echo '未找到相关jar文件'
+        exit
+    fi
+    JARPKG=$defJarPth
+    echo '使用下边jar文件生成smali文件'
+    echo $JARPKG
+fi
+
+
+FPTH=`getFilePth ${JARPKG}`
+FNAME=`getFName ${JARPKG}`
+fileName=`getFileName ${JARPKG}`
+
+cd $FPTH
+dx --dex --output=classes.dex $fileName
+baksmali classes.dex
+
+copysmalifile()
+{
+    smaliFIle="$1"
+}
+
+if [ "${fileName}"x = "LaiwanSDK.jar"x ]; then
+    echo "解包玩来录屏jar包，自动复制生成的smali文件到sdk集成lib目录下"
+    if [[ -d $sdkSmaliPth ]]; then
+        rm -r $sdkSmaliPth
+    fi
+    cp -r /Users/junpengzhang/Documents/android/sdkpackage_android/sdk/libs/out/com/joyme $sdkSmaliPth
+fi
+echo $sdkSmaliPth
+echo '生成文件完成，在jar同级下的out目录中查看smali文件,过程.dex文件与jar文件也在同一目录'
+
+# if [[ ! -f "apks/smalipack.sh" ]]; then
+#     cp -f lib/scrpit/smalipack.sh apks/smalipack.sh
+# fi
+# if [[ ! -f "apks/signedauto.exp" ]]; then
+#     cp -f lib/scrpit/signedauto.exp apks/signedauto.exp
+# fi
+# if [[ ! -f "apks/hongbao.keystore" ]]; then
+#     cp -f lib/scrpit/hongbao.keystore apks/hongbao.keystore
+# fi
+
+# uapkPTH='unpackAPK'
+
+# unpackapks=`find $uapkPTH -name '*.apk' -type f`
+
+# repackAPK()
+# {
+#     echo '开始集成录屏sdk到游戏apks/'${1}'.apk'
+#     echo '复制要集成的apk包到apks目录'
+#     APKPTH='unpackAPK/'${1}'.apk'
+#     APKPTHWORK='apks/'${1}'.apk'
+#     cp -f ${APKPTH} ${APKPTHWORK}
+#     echo '解包游戏apk包'
+#     cd apks
+#     apktool d ${1}'.apk'
+#     gameUnityso=${1}'/lib/armeabi-v7a/libunity.so'
+#     if [ ! -f ${gameUnityso} ]; then 
+#         echo ${1}'不是一个unity引擎开发的游戏'
+#         return
+#     fi 
+#     cd ..
+#     echo '复制Laiwan.apk到游戏资源目录'
+#     cp -f lib/assets/ShareSDK.xml apks/${1}/assets/ShareSDK.xml
+#     cp -f lib/assets/Laiwan.apk apks/${1}/assets/Laiwan.apk
+#     echo '修改游戏原来AndroidManifest.xml文件，加入sdk相应权限以及sdk包的appID'
+#     python createXML.py ${1}
+#     echo '增加sdk相关smali程序到游戏smali中'
+#     python changeSmali.py ${1}
+#     echo '重新打开修改后的apk游戏'
+#     cd apks
+#     sh smalipack.sh ${1}
+#     cd ..
+#     #rm 'apks/'${1}'/dist/'${1}'.apk'
+#     echo '游戏打包完成,在下边目录找到集成录屏后并重新临时签名的apk安装包:'
+#     echo 'apks/'${1}'/dist/signed'${1}'.apk'
+    
+# }
+
+
+
+# echo $unpackapks
+# #解包所有apk并集成录屏sdk
+# for tmp in $unpackapks
+# do
+#     echo $tmp
+#     apkname=`getFName ${tmp}`
+#     repackAPK ${apkname}
+# done
+# echo '所有apk都已集成结束'

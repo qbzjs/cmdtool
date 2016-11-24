@@ -1,0 +1,9 @@
+#!/bin/bash
+export PATH=/usr/local/bin/:$PATH
+cd /Users/junpengzhang/Documents/worklib/packageScript/script
+if [[ $# < 2 ]]; then
+	echo '确包手机已安装要脱壳的app，然后以下边方式，输入手机ip地址和app名称来进行脱壳操作:'
+    echo 'allunpack 172.16.80.193 游戏名称'
+    exit
+fi
+./autounpack ${1} ${2}

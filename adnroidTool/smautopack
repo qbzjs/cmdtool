@@ -1,0 +1,3 @@
+#!/bin/bash
+cd /Users/junpengzhang/Documents/android/sdkpackage_android
+sh smaliautopack.sh

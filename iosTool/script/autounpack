@@ -1,0 +1,82 @@
+#!/bin/bash
+export PATH=/usr/local/bin/:$PATH
+export PATH=/Users/junpengzhang/Documents/sdkwork/sprict/script:$PATH
+A=$#
+if [[ $A < 2 ]]; then
+    echo '确包手机已安装要脱壳的app，然后以下边方式，输入手机ip地址和app名称来进行脱壳操作:'
+    echo './autounpack 172.16.80.193 游戏名称'
+    exit
+fi
+APP=$2
+PW='123456'
+IP=$1
+USER='root'
+echo '手机ip地址:'${IP}
+echo '用户名:'${USER}
+echo '手机ssh密码:'${PW}
+echo '要脱壳的app名称:'${APP}
+echo '开始运行脱壳脚本'
+rm -r "../other"
+mkdir "../other"
+python autopack.py ${IP} ${USER} ${PW} ${APP}
+echo 'app已脱壳结束，脱壳后ipa已放在当前目录下'
+echo '脱壳后的ipa将放入../other目录进行hook操作'
+echo '运行../hooktool.sh脚本开始hook以生成新ipa'
+cd ..
+sh hooktool.sh
+#echo 'hook完成，是否上传hook后的ipa到joyme服务器(Y/n)'
+cd script
+#查找hook之后的ipa文件
+
+#通过中文名获取英文名
+getEname()
+{
+    tmp=`python Ename.py ${1}`
+    echo $tmp
+}
+
+#获取路径中的文件名
+getFName()
+{
+    var="$1"
+    tmp=${var##*/}
+    echo ${tmp%.*}
+}
+
+uploadIPA()
+{
+    uploadipa2server ${1}'.ipa' ${1}
+}
+
+uploadGame()
+{
+    uploadgame2server ${1}'.ipa' ${1}
+}
+
+echo '复制hook后的ipa文件到script/out目录'
+otherOutDir='../out/other'
+OtherIpas=`find $otherOutDir -name '*.ipa' -type f`
+for tmp in $OtherIpas
+do
+    Fname=`getFName ${tmp}`
+    if [[ -d out ]]; then
+        rm -r out
+        mkdir out
+    fi
+    cp -f tmp 'out/'${Fname}'.ipa'
+    echo '将上传hook后的ipa文件到下载服务器'
+    cd out
+    ipaHttpPth=`uploadIPA ${Fname}`
+    echo '嵌入动态库后的游戏提交服务器完成'
+    echo $ipaHttpPth
+    cd ..
+    echo '上传游戏祼包到服务器'
+    appEname=`getEname ${APP}`
+    gamehttpPth=`uploadGame ${appEname}`
+    echo '游戏祼包上传完成'
+    echo $gamehttpPth
+    echo '保存上传ipa后的http下载地址'
+    python saveIpaInfo.py ${APP} ${ipaHttpPth} ${gamehttpPth}
+done
+echo '脚本运行结束，请在allbid.txt文件中查看游戏包下载地址'
+

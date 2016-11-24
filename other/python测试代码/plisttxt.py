@@ -1,0 +1,1 @@
+a = [2,4,6,1,5,7,10,66]ax = sorted(a)print axax = ax[1:-1]print ax

@@ -1,0 +1,1 @@
+la = [[5,1],[4,3],[1,2]]la.sort(key=lambda tmpx:tmpx[0],reverse=False)print la

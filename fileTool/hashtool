@@ -1,0 +1,9 @@
+#!/bin/bash
+echo $1
+CUR_PATH=`pwd`
+basepath=$(cd `dirname $0`; pwd)
+if [[ $1 ]]; then
+    python ${basepath}/hashtool.py $1
+else
+    python ${basepath}/hashtool.py 
+fi

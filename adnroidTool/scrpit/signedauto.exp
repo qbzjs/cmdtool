@@ -1,0 +1,11 @@
+#!/usr/bin/expect
+set timeout 5
+
+set password 123456
+send_user $password
+set Dirname [lrange $argv 0 0]
+send_user $Dirname
+spawn jarsigner -verbose -keystore hongbao.keystore -signedjar signed$Dirname.apk $Dirname.apk hongbao
+expect "*keystore:" 
+send "123456\r"
+interact

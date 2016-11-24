@@ -1,0 +1,1 @@
+#!/usr/bin/env python# -*- coding: utf-8 -*-alis = [18,2,5,6,7,2,1,33,12]print alisalis.sort(reverse=True)print alisalis = alis[1:]print alis

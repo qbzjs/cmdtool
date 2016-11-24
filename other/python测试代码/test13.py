@@ -1,0 +1,1 @@
+import os,sysf = open('test.txt','a')tmp = 100p = 'aabbcc --- %d'%(tmp)f.write(p)f.close()

@@ -1,0 +1,1 @@
+import loggingclass aabb():    def __init__(self):        self.log = logging.getLoggerClass()    def putlog(self):        self.log('aabbcc')                xlog = aabb()xlog.putlog()

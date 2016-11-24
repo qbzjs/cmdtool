@@ -1,0 +1,64 @@
+#!/bin/bash
+export PATH=/usr/local/bin/:$PATH
+export PATH=/Users/junpengzhang/Documents/sdkwork/sprict/script:$PATH
+
+echo "游戏包到服务器"
+
+#获取路径中的文件名
+getFName()
+{
+    var="$1"
+    tmp=${var##*/}
+    echo ${tmp%.*}
+}
+
+uploadIPA()
+{
+    uploadipa2server ${1}'.ipa' ${1}
+}
+
+echo '查找所有out目录的祼包'
+otherOutDir='../out/other'
+OtherIpas=`find $otherOutDir -name '*.ipa' -type f`
+echo $OtherIpas
+for tmp in $OtherIpas
+do
+    Fname=`getFName ${tmp}`
+    if [[ -d out ]]; then
+        rm -r out
+        mkdir out
+    fi
+    cp -f $tmp 'out/'${Fname}'.ipa'
+    echo '将上传hook后的ipa文件到下载服务器'
+    cd out
+    ipaHttpPth=`uploadIPA ${Fname}`
+    echo '嵌入动态库后的游戏提交服务器完成'
+    echo $ipaHttpPth
+    cd ..
+    python saveuploadinfo.py ${Fname} "${ipaHttpPth}" ""
+done
+
+uploadGame()
+{
+    uploadgame2server ${1}'.ipa' ${1}
+}
+
+
+luobaoDir='../other'
+luobaoIpas=`find $luobaoDir -name '*.ipa' -type f`
+echo $luobaoIpas
+for tmp in $luobaoIpas
+do
+    Fname=`getFName ${tmp}`
+    echo '上传游戏祼包到服务器'
+    cd ../other
+    gamehttpPth=`uploadGame ${Fname}`
+    echo '游戏祼包上传完成'
+    echo $gamehttpPth
+    echo '保存上传ipa后的http下载地址'
+    cd ../script
+    python saveuploadinfo.py ${Fname} "" "${gamehttpPth}"
+done
+
+echo '脚本运行结束，请在allbid.txt文件中查看游戏包下载地址'
+
