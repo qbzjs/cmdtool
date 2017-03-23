@@ -1,5 +1,7 @@
 1.erlangTool中为编译erlang代码的工具,使用时要先装上erlang
-2.fileTool为文件相关的工具，目前只有文件和字符串的hash计算工具
+2.fileTool为文件相关的工具，目前有文件和字符串的hash计算工具
+  zhuanma.py为中文或者其他文字编码转utf8的工具,用法
+  python zhuangma.py 要转码的文件
 3.androidTool是一些安卓开发相关的工具
 4.iosTool是一些ios开发时写的工具
 5.other中放的是一些python测试代码
