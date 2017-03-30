@@ -1,0 +1,13 @@
+1).打开finder中的 应用程序 找到webstorm应用，右键选择 显示包内容 打开 contents 文件夹 打开 bin 文件夹。
+
+将下载好的破解补丁放在bin文件夹下！
+
+mac系统中：找到webstorm.vmoptions文件；
+
+windows系统中：找到WebStorm.exe.vmoptions 与 WebStorm64.exe.vmoptions 文件（用编辑器打开后），
+
+在头部加上  -javaagent:/Applications/WebStorm.app/Contents/bin/JetbrainsCrack-2.5.6.jar 指令。
+
+2).查看是否破解成功！重启webstorm软件 ，在激活码区域随便输入点，就可以进入编辑页面了，在Help中选中Reginster...
+
+3).破解截止日期为2099年12月底
