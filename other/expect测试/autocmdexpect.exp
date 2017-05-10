@@ -1,0 +1,19 @@
+#!/usr/bin/expect
+spawn python cmdtest.py
+expect {
+	"count0" { send "23456\r"}
+	"选择操作, 输入数字编号 :" { send "end\r"}
+}
+expect {
+	"count0" { send "23456\r"}
+	"选择操作, 输入数字编号 :" { send "end\r"}
+}
+# expect "count0:"  
+# send "123456\r"
+# expect "count1:"
+# send "aaa\r"  
+# expect "count2"
+# send "end\r"
+expect eof  
+exit
+
