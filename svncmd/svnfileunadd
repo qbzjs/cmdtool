@@ -1,0 +1,14 @@
+#!/bin/bash
+export PATH=$PATH
+echo "svn提交所有更改文件"
+if [[ $1 ]]; then
+	cd $1
+	echo "移除文件svn版本控制"
+	svn revert $1
+	echo "加入完成,请使用svn ci -m 说明 提交新文件"
+else
+
+	echo "svnunaddpath脚本要求输入新文件所在目录路径"
+fi
+
+
