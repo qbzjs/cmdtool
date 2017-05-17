@@ -1,0 +1,26 @@
+#!/bin/bash
+export PATH=$PATH
+# 当前目录
+CUR_PATH=`pwd`
+# 脚本所在目录
+basepath=$(cd `dirname $0`; pwd)
+echo "svn提交所有更改文件"
+if [[ $1 ]]; then
+	cd $1
+	# echo "强行add所有不在版本控制下的新文件"
+	# svn add . --no-ignore --force
+	echo "add目录下所有不在版本控制的新文件"
+	svn st | awk '{if ( $1 == "?") { print $2}}' | xargs svn add 
+	echo "加入完成,请使用svn ci -m 说明 提交新文件"
+else
+	echo $CUR_PATH
+	cd $CUR_PATH
+	echo "add目录下所有不在版本控制的新文件"
+	svn st | awk '{if ( $1 == "?") { print $2}}' | xargs svn add 
+	echo "加入完成,请使用svn ci -m 说明 提交新文件"
+fi
+
+
+# CUR_PATH=`pwd`
+
+# basepath=$(cd `dirname $0`; pwd) #
