@@ -91,3 +91,39 @@ def createDirs(spth,tpth):
                 if not dtmp in makedirstmp:
                     makeDir(tpth,dtmp)
                     makedirstmp.append(dtmp)
+
+# 替换文件名
+def replaceFileName(path,sname,replaceStr,tostr):
+    a = sname
+    tmpname = a.replace(replaceStr, tostr)
+    outpath = path + tmpname
+    oldpath = path + sname
+    cmd = "mv %s %s"%(oldpath,outpath)
+    print cmd
+    os.system("mv %s %s"%(oldpath,outpath))
+
+# 替换目录下的文件名中某个字符串为其他字符串
+def renameDir(sdir,replacestr,tostr,exittype):
+    files = getAllExtFile(sdir,fromatx = exittype)
+    allfilepath = []
+    for f in files:
+        tmppath = sdir + f[1]
+        filename = f[2] + exittype
+        allfilepath.append([tmppath,filename])
+    for p in allfilepath:
+        replaceFileName(p[0], p[1], replacestr, tostr)
+
+
+
+#测试
+if __name__ == '__main__':
+    args = sys.argv
+    fpth = ''
+    if len(args) == 2 :
+        if os.path.exists(args[1]):
+            fpth = args[1]
+        else:
+            print "请加上要转码的文件路径"
+    else:
+        print "请加上要转码的文件路径"
+    renameDir(fpth, '-', '_', '.png')
