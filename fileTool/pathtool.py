@@ -55,6 +55,69 @@ def getAllExtFile(pth,fromatx = ".erl"):
                 jsonfilelist.append(jsonArr)
     return jsonfilelist
 
+
+#获取一个目录下的所有子目录路径
+def getAllDirs(spth):
+    files = getAllExtFile(spth,'.*')
+    makedirstmp = []
+    isOK = True
+    # 分析所有要创建的目录
+    for d in files:
+        if d[1] != '/' and (not d[1] in makedirstmp): #创建未创建的目录层级
+            tmpdir = d[1][1:]
+            tmpleves = tmpdir.split('/')
+            alldirs = getAllLevelDirs(tmpleves)
+            for dtmp in alldirs:
+                if not dtmp in makedirstmp:
+                    makedirstmp.append(dtmp)
+    return makedirstmp
+#获取目录下的所有文件路径
+def getAllFiles(spth):
+    files = getAllExtFile(spth,'.*')
+    makedirstmp = []
+    isOK = True
+    # 分析所有要创建的目录
+    for d in files:
+        makedirstmp.append(d[0])
+    return makedirstmp
+
+
+def isFile(filename):
+    try:
+        with open(filename) as f:
+            return True
+    except IOError:
+        return False
+
+def finddir(arg,dirname,filenames):
+    name,text = os.path.split(dirname)
+    dirnametmp = str(dirname)
+    if text and text[0] == '.':
+        print dirname
+        print filenames
+        os.system('rm -r %s'%(dirname))
+        return
+    elif filenames:
+        for f in filenames:
+            if f[0] == '.' and isFile(dirname + f):
+                fpthtmp = dirname + f
+                if f.find(' '):
+                    nf = f.replace(' ','\ ')
+                    fpthtmp = dirname + nf
+                print dirname + f
+                os.system('rm  %s'%(fpthtmp))
+
+#删除所有pth目录下的所有"."开头的文件名和目录名
+def removeProjectAllHideDir(pth):
+    alldirs = getAllDirs(pth)
+    if not ('/' in alldirs):
+        alldirs.append('/')
+    for d in alldirs:
+        tmpth = pth + d
+        os.path.walk(tmpth, finddir, 0)
+
+
+
 #获取一个路径中所包含的所有目录及子目录
 def getAllLevelDirs(dirpths):
     dirleves = []
