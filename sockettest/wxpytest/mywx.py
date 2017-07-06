@@ -5,6 +5,9 @@
 # @Link    : http://example.org
 # @Version : $Id$
 
+#http://wxpy.readthedocs.io/zh/latest/index.html
+#https://github.com/youfou/wxpy
+
 import os
 from wxpy import *
 
