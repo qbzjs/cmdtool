@@ -8,6 +8,14 @@
 import os
 import sys
 import pinyin
+
+# print pinyin.get('你好')
+
+# print pinyin.get('你好', format="strip", delimiter=" ")
+
+# print pinyin.get('你好', format="numerical")
+
+print pinyin.get_initial('你好')
 def getStringName(hanyu):
 	pname = pinyin.get_initial(hanyu,delimiter='').upper()
 	return pname
