@@ -11,6 +11,10 @@ from ftplib import FTP
 import ftplib
 
 
+projectPth = '/Users/user/doc/shanghai/projecte/shanghai/shanghai_debug'
+ftpUpdatePth = '/mahjong_shanghai_test/update'
+ftpUpdateShanghai = '/mahjong_shanghai_test'
+
 # 字节bytes转化kb\m\g
 def formatSize(bytes):
     try:
@@ -60,6 +64,8 @@ def getAllExtFile(pth,fromatx = ".erl"):
         for filex in files:          
             #print filex
             name,text = os.path.splitext(filex)
+            if name == '.DS_Store': #mac下的系统文件
+                continue
             if cmp(text,fromatx) == 0:
                 jsonArr = []
                 rootdir = pth
@@ -84,9 +90,11 @@ def getAllExtFile(pth,fromatx = ".erl"):
 
 
 
+
+
 class FTPTool():
     """docstring for FTPTool"""
-    def __init__(self, ftpIP = "ftp ip地址",ftpPort = "21",userNname = "ftp用户名",userPW = "ftp用户密码",defPth = "项目目录"):
+    def __init__(self, ftpIP = "ip地址",ftpPort = "21",userNname = "username",userPW = "password",defPth = "/ftppath"):
         self.ftp = FTP() 
         self.ftpIP = ftpIP          #ftp服务器ip
         self.ftpPort = ftpPort      #ftp服务器端口
@@ -94,7 +102,7 @@ class FTPTool():
         self.ftpPth = defPth         #当前服务器路径
         self.userName = userNname
         self.userPW = userPW
-        self.bufsize = 2048                      #设置的缓冲区大小
+        self.bufsize = 4096                      #设置的缓冲区大小
         self.initFTPServer()
         self._is_dir = False
     def initFTPServer(self):
@@ -128,6 +136,7 @@ class FTPTool():
         # 分析所有要创建的目录
         count = len(files)
         print "总上传%s目录中文件数:%d"%(fpth,count)
+        tmpfpth = fpth
         for d in files:
             if d[1] != '/' and (not d[1] in makedirs): #创建未创建的目录层级
                 tmpdir = d[1][1:]
@@ -141,10 +150,10 @@ class FTPTool():
             fpth = self.ftpPth + d[0]
             isOK = self.updateFileToServer(lpth, fpth)
             if isOK :
-                print "%s文件上传完成:%d"%(d[2],count)
+                print "(%d)剩余文件,目录%s上传文件完成:%s"%(count,tmpfpth,d[0][1:])
                 count -= 1
             else:
-                print "%s文件上传大小错误"%(d[2])
+                print "文件上传大小错误:%s"%(d[0][1:])
         outstr = "目录%s上传结果:%d"%(fpth,isOK)
         upendCallBack(outstr)
 
@@ -164,7 +173,7 @@ class FTPTool():
 
     #上传文件到ftp服务器指定目录下isOverWrite是否覆盖,默认覆盖
     def updateFileToServer(self,localFile,serverPth,isOverWrite = True):
-        print localFile,'===>',serverPth
+        # print localFile,'===>',serverPth
         command = 'STOR ' + serverPth
         filehandler = open(localFile,'rb')
         self.ftp.storbinary(command,filehandler,self.bufsize)
@@ -230,7 +239,7 @@ class FTPTool():
             return False
     #创建新版本目录
     def createNewVisionDir(self):
-        updatepth = '/mahjong_shanghai_test/update'
+        updatepth = '/ftppath/update'
         nlist = self.getListServerPathFiles(updatepth)
         nlist.sort(reverse=True)
         print nlist
@@ -256,7 +265,7 @@ class FTPTool():
         return nversiondir
 
     def getLastVersionID(self):
-        updatepth = '/mahjong_shanghai_test/update'
+        updatepth = '/ftppath/update'
         nlist = self.getListServerPathFiles(updatepth)
         nlist.sort(reverse=True)
         print nlist[0]
@@ -284,14 +293,12 @@ class FTPTool():
                 return self._is_dir       
         return self._is_dir
 
-projectPth = '/Users/junpengzhang/doc/shanghai/projecte/shanghai'
-ftpUpdatePth = '/mahjong_shanghai_test/update'
-ftpUpdateShanghai = '/mahjong_shanghai_test'
+
 
 #修改本脚本配制文件
 def changeCreatePythonVersion(versionNumber):
     strversionnum = str(versionNumber)
-    vernumber = int(strversionnum[2:])
+    vernumber = int(strversionnum) - 10000
     testconfpth = projectPth + '/assetsUpdate_test/configAssetsUpdate.py'
     f = open(testconfpth,'r')
     pylines = f.readlines()
@@ -299,9 +306,9 @@ def changeCreatePythonVersion(versionNumber):
     for ln in range(len(pylines)):
         l = pylines[ln]
         if l.find('VersionNumber = "') != -1 :
-            pylines[ln] = 'VersionNumber = "1.0.%d"'%(vernumber)
+            pylines[ln] = 'VersionNumber = "1.0.%d"\n'%(vernumber)
         if l.find('VersionString = "') != -1 :
-            pylines[ln] = 'VersionString = "%s"'%(strversionnum)
+            pylines[ln] = 'VersionString = "%s"\n'%(strversionnum)
     outstr = ''
     for l in pylines:
         outstr += l
@@ -346,7 +353,7 @@ def uploadNewVersionData(localpth):
     print "上传版控制文件version.manifest"
     ftptool.updateFileToServer(localpth + '/version.manifest', ftpUpdateShanghai + '/version.manifest')
 
-    print "最新版%s热更新上传完成"%(localnumber)
+    print "上海客户端,测试服热更新,版本%s"%(localnumber)
 
 if __name__ == '__main__':
     args = sys.argv
@@ -385,7 +392,6 @@ if __name__ == '__main__':
     # print ftptool.getAllLevelDirs(['a','b','c'])
     # print ftptool.is_ftpPath('/mahjong_shanghai_test/update')
     # print ftptool.is_ftp_dir('/mahjong_shanghai_test/version.manifest')
-# http://blog.csdn.net/linda1000/article/details/8255771
 # ftp=FTP()                         #设置变量
 # ftp.set_debuglevel(2)             #打开调试级别2，显示详细信息
 # # print ftp.getwelcome()            #打印出欢迎信息
